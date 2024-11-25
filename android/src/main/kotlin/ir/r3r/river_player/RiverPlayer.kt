@@ -525,7 +525,7 @@ internal class RiverPlayer(
             })
         surface = Surface(textureEntry.surfaceTexture())
         exoPlayer?.setVideoSurface(surface)
-        setAudioAttributes(exoPlayer, true)
+        setAudioAttributes(exoPlayer, false)
         exoPlayer?.addListener(object : Player.Listener {
             override fun onPlaybackStateChanged(playbackState: Int) {
                 when (playbackState) {
@@ -705,6 +705,21 @@ internal class RiverPlayer(
                 override fun onSeekTo(pos: Long) {
                     sendSeekToEvent(pos)
                     super.onSeekTo(pos)
+                }
+
+                override fun onPause() {
+                    exoPlayer?.pause()
+                    val event: MutableMap<String, Any> = HashMap()
+                    event["event"] = "pause"
+                    eventSink.success(event)
+                    super.onPause()
+                }
+                override fun onPlay() {
+                    exoPlayer?.play()
+                    val event: MutableMap<String, Any> = HashMap()
+                    event["event"] = "play"
+                    eventSink.success(event)
+                    super.onPlay()
                 }
             })
             mediaSession.isActive = true

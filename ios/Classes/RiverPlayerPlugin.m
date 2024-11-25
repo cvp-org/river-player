@@ -106,9 +106,29 @@ bool _remoteCommandsInitialized = false;
     }
 }
 
+- (void)handleAudioInterruption:(NSNotification *)notification {
+    NSDictionary *userInfo = notification.userInfo;
+    NSNumber *interruptionType = userInfo[AVAudioSessionInterruptionTypeKey];
+    if (interruptionType) {
+        if ([interruptionType intValue] == AVAudioSessionInterruptionTypeBegan) {
+            // Interruption began
+            NSLog(@"Audio session interrupted - another app likely took control.");
+            _notificationPlayer.eventSink(@{@"event" : @"pause"});
+        } else if ([interruptionType intValue] == AVAudioSessionInterruptionTypeEnded) {
+            NSLog(@"Audio session interrupted - another app likely took control.");
+        }
+    }
+}
+
 - (void) setRemoteCommandsNotificationActive{
-    [[AVAudioSession sharedInstance] setActive:true error:nil];
+     AVAudioSession *audioSession = [AVAudioSession sharedInstance];
+
+    [audioSession setActive:true error:nil];
     [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleAudioInterruption:)
+                                                 name:AVAudioSessionInterruptionNotification
+                                               object:audioSession];
 }
 
 - (void) setRemoteCommandsNotificationNotActive{
@@ -117,6 +137,7 @@ bool _remoteCommandsInitialized = false;
     }
 
     [[UIApplication sharedApplication] endReceivingRemoteControlEvents];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 
