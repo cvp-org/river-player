@@ -45,12 +45,22 @@ class _BetterPlayerSubtitlesDrawerState
         _playerVisible = state;
       });
     });
+    _subtitlesConfiguration = widget.betterPlayerSubtitlesConfiguration;
 
     widget.betterPlayerController.videoPlayerController!
         .addListener(_updateState);
 
     super.initState();
-    _subtitlesConfiguration = widget.betterPlayerSubtitlesConfiguration;
+  }
+
+  @override
+  void didUpdateWidget(BetterPlayerSubtitlesDrawer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (_subtitlesConfiguration != widget.betterPlayerSubtitlesConfiguration) {
+      setState(() {
+        _subtitlesConfiguration = widget.betterPlayerSubtitlesConfiguration;
+      });
+    }
   }
 
   @override
@@ -156,19 +166,5 @@ class _BetterPlayerSubtitlesDrawerState
       text,
       textStyle: textStyle,
     );
-  }
-
-  BetterPlayerSubtitlesConfiguration setupDefaultConfiguration() {
-    return const BetterPlayerSubtitlesConfiguration();
-  }
-
-  @override
-  void didUpdateWidget(BetterPlayerSubtitlesDrawer oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (_subtitlesConfiguration != widget.betterPlayerSubtitlesConfiguration) {
-      setState(() {
-        _subtitlesConfiguration = widget.betterPlayerSubtitlesConfiguration;
-      });
-    }
   }
 }
