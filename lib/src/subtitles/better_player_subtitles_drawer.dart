@@ -35,6 +35,8 @@ class _BetterPlayerSubtitlesDrawerState
   ///Stream used to detect if play controls are visible or not
   late StreamSubscription _visibilityStreamSubscription;
 
+  late BetterPlayerSubtitlesConfiguration _subtitlesConfiguration;
+
   @override
   void initState() {
     _visibilityStreamSubscription =
@@ -48,6 +50,7 @@ class _BetterPlayerSubtitlesDrawerState
         .addListener(_updateState);
 
     super.initState();
+    _subtitlesConfiguration = widget.betterPlayerSubtitlesConfiguration;
   }
 
   @override
@@ -82,10 +85,10 @@ class _BetterPlayerSubtitlesDrawerState
       child: Padding(
         padding: EdgeInsets.only(
             bottom: _playerVisible
-                ? widget.betterPlayerSubtitlesConfiguration.bottomPadding + 30
-                : widget.betterPlayerSubtitlesConfiguration.bottomPadding,
-            left: widget.betterPlayerSubtitlesConfiguration.leftPadding,
-            right: widget.betterPlayerSubtitlesConfiguration.rightPadding),
+                ? _subtitlesConfiguration.bottomPadding + 30
+                : _subtitlesConfiguration.bottomPadding,
+            left: _subtitlesConfiguration.leftPadding,
+            right: _subtitlesConfiguration.rightPadding),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: textWidgets,
@@ -113,7 +116,7 @@ class _BetterPlayerSubtitlesDrawerState
     return Row(children: [
       Expanded(
         child: Align(
-          alignment: widget.betterPlayerSubtitlesConfiguration.alignment,
+          alignment: _subtitlesConfiguration.alignment,
           child: _getTextWithStroke(subtitleText),
         ),
       ),
@@ -122,23 +125,23 @@ class _BetterPlayerSubtitlesDrawerState
 
   Widget _getTextWithStroke(String subtitleText) {
     final outerTextStyle = TextStyle(
-        fontSize: widget.betterPlayerSubtitlesConfiguration.fontSize,
-        fontFamily: widget.betterPlayerSubtitlesConfiguration.fontFamily,
+        fontSize: _subtitlesConfiguration.fontSize,
+        fontFamily: _subtitlesConfiguration.fontFamily,
         foreground: Paint()
           ..style = PaintingStyle.stroke
-          ..strokeWidth = widget.betterPlayerSubtitlesConfiguration.outlineSize
-          ..color = widget.betterPlayerSubtitlesConfiguration.outlineColor);
+          ..strokeWidth = _subtitlesConfiguration.outlineSize
+          ..color = _subtitlesConfiguration.outlineColor);
 
     final innerTextStyle = TextStyle(
-        fontFamily: widget.betterPlayerSubtitlesConfiguration.fontFamily,
-        color: widget.betterPlayerSubtitlesConfiguration.fontColor,
-        fontSize: widget.betterPlayerSubtitlesConfiguration.fontSize);
+        fontFamily: _subtitlesConfiguration.fontFamily,
+        color: _subtitlesConfiguration.fontColor,
+        fontSize: _subtitlesConfiguration.fontSize);
 
     return Container(
-      color: widget.betterPlayerSubtitlesConfiguration.backgroundColor,
+      color: _subtitlesConfiguration.backgroundColor,
       child: Stack(
         children: [
-          if (widget.betterPlayerSubtitlesConfiguration.outlineEnabled)
+          if (_subtitlesConfiguration.outlineEnabled)
             _buildHtmlWidget(subtitleText, outerTextStyle)
           else
             const SizedBox(),
@@ -157,5 +160,15 @@ class _BetterPlayerSubtitlesDrawerState
 
   BetterPlayerSubtitlesConfiguration setupDefaultConfiguration() {
     return const BetterPlayerSubtitlesConfiguration();
+  }
+
+  @override
+  void didUpdateWidget(BetterPlayerSubtitlesDrawer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (_subtitlesConfiguration != widget.betterPlayerSubtitlesConfiguration) {
+      setState(() {
+        _subtitlesConfiguration = widget.betterPlayerSubtitlesConfiguration;
+      });
+    }
   }
 }
