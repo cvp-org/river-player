@@ -211,6 +211,8 @@ class BetterPlayerController {
   ///Currently displayed [BetterPlayerSubtitle].
   BetterPlayerSubtitle? renderedSubtitle;
 
+  BetterPlayerSubtitlesConfiguration? _subtitlesConfiguration;
+
   BetterPlayerController(
     this.betterPlayerConfiguration, {
     this.betterPlayerPlaylistConfiguration,
@@ -1360,5 +1362,13 @@ class BetterPlayerController {
       ///Delete files async
       _tempFiles.forEach((file) => file.delete());
     }
+  }
+
+  BetterPlayerSubtitlesConfiguration getSubtitlesConfiguration() {
+    return _subtitlesConfiguration ?? betterPlayerConfiguration.subtitlesConfiguration;
+  }
+
+  void setSubtitlesConfiguration(BetterPlayerSubtitlesConfiguration subtitlesConfiguration) {
+    _subtitlesConfiguration = subtitlesConfiguration;
   }
 }

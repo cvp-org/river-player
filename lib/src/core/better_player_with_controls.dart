@@ -22,9 +22,6 @@ class BetterPlayerWithControls extends StatefulWidget {
 }
 
 class _BetterPlayerWithControlsState extends State<BetterPlayerWithControls> {
-  BetterPlayerSubtitlesConfiguration get subtitlesConfiguration =>
-      widget.controller!.betterPlayerConfiguration.subtitlesConfiguration;
-
   BetterPlayerControlsConfiguration get controlsConfiguration =>
       widget.controller!.betterPlayerControlsConfiguration;
 
@@ -142,7 +139,7 @@ class _BetterPlayerWithControlsState extends State<BetterPlayerWithControls> {
               Container(),
           BetterPlayerSubtitlesDrawer(
             betterPlayerController: betterPlayerController,
-            betterPlayerSubtitlesConfiguration: subtitlesConfiguration,
+            betterPlayerSubtitlesConfiguration: betterPlayerController.getSubtitlesConfiguration(),
             subtitles: betterPlayerController.subtitlesLines,
             playerVisibilityStream: playerVisibilityStreamController.stream,
           ),

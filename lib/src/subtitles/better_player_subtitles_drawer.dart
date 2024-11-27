@@ -8,14 +8,14 @@ import 'package:river_player/src/subtitles/better_player_subtitle.dart';
 class BetterPlayerSubtitlesDrawer extends StatefulWidget {
   final List<BetterPlayerSubtitle> subtitles;
   final BetterPlayerController betterPlayerController;
-  final BetterPlayerSubtitlesConfiguration? betterPlayerSubtitlesConfiguration;
+  final BetterPlayerSubtitlesConfiguration betterPlayerSubtitlesConfiguration;
   final Stream<bool> playerVisibilityStream;
 
   const BetterPlayerSubtitlesDrawer({
     Key? key,
     required this.subtitles,
     required this.betterPlayerController,
-    this.betterPlayerSubtitlesConfiguration,
+    required this.betterPlayerSubtitlesConfiguration,
     required this.playerVisibilityStream,
   }) : super(key: key);
 
@@ -29,11 +29,7 @@ class _BetterPlayerSubtitlesDrawerState
   final RegExp htmlRegExp =
       // ignore: unnecessary_raw_strings
       RegExp(r"<[^>]*>", multiLine: true);
-  late TextStyle _innerTextStyle;
-  late TextStyle _outerTextStyle;
-
   VideoPlayerValue? _latestValue;
-  BetterPlayerSubtitlesConfiguration? _configuration;
   bool _playerVisible = false;
 
   ///Stream used to detect if play controls are visible or not
@@ -48,27 +44,8 @@ class _BetterPlayerSubtitlesDrawerState
       });
     });
 
-    if (widget.betterPlayerSubtitlesConfiguration != null) {
-      _configuration = widget.betterPlayerSubtitlesConfiguration;
-    } else {
-      _configuration = setupDefaultConfiguration();
-    }
-
     widget.betterPlayerController.videoPlayerController!
         .addListener(_updateState);
-
-    _outerTextStyle = TextStyle(
-        fontSize: _configuration!.fontSize,
-        fontFamily: _configuration!.fontFamily,
-        foreground: Paint()
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = _configuration!.outlineSize
-          ..color = _configuration!.outlineColor);
-
-    _innerTextStyle = TextStyle(
-        fontFamily: _configuration!.fontFamily,
-        color: _configuration!.fontColor,
-        fontSize: _configuration!.fontSize);
 
     super.initState();
   }
@@ -105,10 +82,10 @@ class _BetterPlayerSubtitlesDrawerState
       child: Padding(
         padding: EdgeInsets.only(
             bottom: _playerVisible
-                ? _configuration!.bottomPadding + 30
-                : _configuration!.bottomPadding,
-            left: _configuration!.leftPadding,
-            right: _configuration!.rightPadding),
+                ? widget.betterPlayerSubtitlesConfiguration.bottomPadding + 30
+                : widget.betterPlayerSubtitlesConfiguration.bottomPadding,
+            left: widget.betterPlayerSubtitlesConfiguration.leftPadding,
+            right: widget.betterPlayerSubtitlesConfiguration.rightPadding),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: textWidgets,
@@ -136,7 +113,7 @@ class _BetterPlayerSubtitlesDrawerState
     return Row(children: [
       Expanded(
         child: Align(
-          alignment: _configuration!.alignment,
+          alignment: widget.betterPlayerSubtitlesConfiguration.alignment,
           child: _getTextWithStroke(subtitleText),
         ),
       ),
@@ -144,15 +121,28 @@ class _BetterPlayerSubtitlesDrawerState
   }
 
   Widget _getTextWithStroke(String subtitleText) {
+    final outerTextStyle = TextStyle(
+        fontSize: widget.betterPlayerSubtitlesConfiguration.fontSize,
+        fontFamily: widget.betterPlayerSubtitlesConfiguration.fontFamily,
+        foreground: Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = widget.betterPlayerSubtitlesConfiguration.outlineSize
+          ..color = widget.betterPlayerSubtitlesConfiguration.outlineColor);
+
+    final innerTextStyle = TextStyle(
+        fontFamily: widget.betterPlayerSubtitlesConfiguration.fontFamily,
+        color: widget.betterPlayerSubtitlesConfiguration.fontColor,
+        fontSize: widget.betterPlayerSubtitlesConfiguration.fontSize);
+
     return Container(
-      color: _configuration!.backgroundColor,
+      color: widget.betterPlayerSubtitlesConfiguration.backgroundColor,
       child: Stack(
         children: [
-          if (_configuration!.outlineEnabled)
-            _buildHtmlWidget(subtitleText, _outerTextStyle)
+          if (widget.betterPlayerSubtitlesConfiguration.outlineEnabled)
+            _buildHtmlWidget(subtitleText, outerTextStyle)
           else
             const SizedBox(),
-          _buildHtmlWidget(subtitleText, _innerTextStyle)
+          _buildHtmlWidget(subtitleText, innerTextStyle)
         ],
       ),
     );
