@@ -652,7 +652,6 @@ class BetterPlayerController {
     _postEvent(BetterPlayerEvent(BetterPlayerEventType.pause));
   }
 
-  ///Move player to specific position/moment of the video.
   Future<void> seekTo(Duration moment) async {
     if (videoPlayerController == null) {
       throw StateError("The data source has not been initialized");
@@ -1340,27 +1339,45 @@ class BetterPlayerController {
   ///Dispose BetterPlayerController. When [forceDispose] parameter is true, then
   ///autoDispose parameter will be overridden and controller will be disposed
   ///(if it wasn't disposed before).
-  void dispose({bool forceDispose = false}) {
+  Future<void> dispose({bool forceDispose = false}) async {
     if (!betterPlayerConfiguration.autoDispose && !forceDispose) {
       return;
     }
-    if (!_disposed) {
-      if (videoPlayerController != null) {
-        pause();
-        videoPlayerController!.removeListener(_onFullScreenStateChanged);
-        videoPlayerController!.removeListener(_onVideoPlayerChanged);
-        videoPlayerController!.dispose();
-      }
-      _eventListeners.clear();
-      _nextVideoTimer?.cancel();
-      _nextVideoTimeStreamController.close();
-      _controlsVisibilityStreamController.close();
-      _videoEventStreamSubscription?.cancel();
-      _disposed = true;
-      _controllerEventStreamController.close();
 
-      ///Delete files async
-      _tempFiles.forEach((file) => file.delete());
+    if (!_disposed) {
+      _disposed = true;
+
+      try {
+        if (videoPlayerController != null) {
+          await videoPlayerController!.pause();
+          await videoPlayerController!.seekTo(Duration.zero);
+
+          videoPlayerController!.removeListener(_onFullScreenStateChanged);
+          videoPlayerController!.removeListener(_onVideoPlayerChanged);
+
+          await videoPlayerController!.dispose();
+          videoPlayerController = null;
+        }
+
+        _eventListeners.clear();
+        _nextVideoTimer?.cancel();
+        await _nextVideoTimeStreamController.close();
+        await _controlsVisibilityStreamController.close();
+        await _videoEventStreamSubscription?.cancel();
+        await _controllerEventStreamController.close();
+
+        for (final file in _tempFiles) {
+          try {
+            await file.delete();
+          } catch (e) {
+            BetterPlayerUtils.log("Failed to delete temp file: $e");
+          }
+        }
+        _tempFiles.clear();
+
+      } catch (error) {
+        BetterPlayerUtils.log("Error during dispose: $error");
+      }
     }
   }
 
