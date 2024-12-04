@@ -65,8 +65,10 @@ class _BetterPlayerSubtitlesDrawerState
 
   @override
   void dispose() {
-    widget.betterPlayerController.videoPlayerController!
-        .removeListener(_updateState);
+    final videoPlayerController = widget.betterPlayerController.videoPlayerController;
+    if (videoPlayerController != null) {
+      videoPlayerController.removeListener(_updateState);
+    }
     _visibilityStreamSubscription.cancel();
     super.dispose();
   }
