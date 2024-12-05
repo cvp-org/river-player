@@ -152,7 +152,14 @@ class _BetterPlayerSubtitlesDrawerState
         fontWeight: _subtitlesConfiguration.fontWeight);
 
     return Container(
-      color: _subtitlesConfiguration.backgroundColor,
+      padding: const EdgeInsets.symmetric(
+        horizontal: 8,
+        vertical: 6,
+      ),
+      decoration: BoxDecoration(
+        color: _subtitlesConfiguration.backgroundColor,
+        borderRadius: BorderRadius.circular(8),
+      ),
       child: Stack(
         children: [
           if (_subtitlesConfiguration.outlineEnabled)
