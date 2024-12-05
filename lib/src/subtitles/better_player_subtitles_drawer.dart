@@ -153,8 +153,8 @@ class _BetterPlayerSubtitlesDrawerState
 
     return Container(
       padding: const EdgeInsets.symmetric(
-        horizontal: 6,
-        vertical: 4,
+        horizontal: 8,
+        vertical: 2,
       ),
       decoration: BoxDecoration(
         color: _subtitlesConfiguration.backgroundColor,
