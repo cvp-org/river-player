@@ -7,6 +7,9 @@ class BetterPlayerSubtitlesConfiguration {
   ///Subtitle font size
   final double fontSize;
 
+  ///Subtitle font weight
+  final FontWeight fontWeight;
+
   ///Subtitle font color
   final Color fontColor;
 
@@ -39,6 +42,7 @@ class BetterPlayerSubtitlesConfiguration {
 
   const BetterPlayerSubtitlesConfiguration({
     this.fontSize = 14,
+    this.fontWeight = FontWeight.normal,
     this.fontColor = Colors.white,
     this.outlineEnabled = true,
     this.outlineColor = Colors.black,

@@ -139,6 +139,7 @@ class _BetterPlayerSubtitlesDrawerState
     final outerTextStyle = TextStyle(
         fontSize: _subtitlesConfiguration.fontSize,
         fontFamily: _subtitlesConfiguration.fontFamily,
+        fontWeight: _subtitlesConfiguration.fontWeight,
         foreground: Paint()
           ..style = PaintingStyle.stroke
           ..strokeWidth = _subtitlesConfiguration.outlineSize
@@ -147,7 +148,8 @@ class _BetterPlayerSubtitlesDrawerState
     final innerTextStyle = TextStyle(
         fontFamily: _subtitlesConfiguration.fontFamily,
         color: _subtitlesConfiguration.fontColor,
-        fontSize: _subtitlesConfiguration.fontSize);
+        fontSize: _subtitlesConfiguration.fontSize,
+        fontWeight: _subtitlesConfiguration.fontWeight);
 
     return Container(
       color: _subtitlesConfiguration.backgroundColor,
