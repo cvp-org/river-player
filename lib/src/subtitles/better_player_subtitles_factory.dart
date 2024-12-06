@@ -61,8 +61,6 @@ class BetterPlayerSubtitlesFactory {
         subtitles.addAll(cacheList);
       }
       client.close();
-
-      BetterPlayerUtils.log("Parsed total subtitles: ${subtitles.length}");
       return subtitles;
     } catch (exception) {
       BetterPlayerUtils.log(

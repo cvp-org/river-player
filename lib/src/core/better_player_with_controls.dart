@@ -139,7 +139,8 @@ class _BetterPlayerWithControlsState extends State<BetterPlayerWithControls> {
               Container(),
           BetterPlayerSubtitlesDrawer(
             betterPlayerController: betterPlayerController,
-            betterPlayerSubtitlesConfiguration: betterPlayerController.getSubtitlesConfiguration(),
+            betterPlayerSubtitlesConfiguration:
+                betterPlayerController.getSubtitlesConfiguration(),
             subtitles: betterPlayerController.subtitlesLines,
             playerVisibilityStream: playerVisibilityStreamController.stream,
           ),

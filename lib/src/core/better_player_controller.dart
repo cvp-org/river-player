@@ -236,6 +236,10 @@ class BetterPlayerController {
 
   ///Setup new data source in Better Player.
   Future setupDataSource(BetterPlayerDataSource betterPlayerDataSource) async {
+    if (_disposed) {
+      return;
+    }
+
     postEvent(BetterPlayerEvent(BetterPlayerEventType.setupDataSource,
         parameters: <String, dynamic>{
           _dataSourceParameter: betterPlayerDataSource,
@@ -552,6 +556,10 @@ class BetterPlayerController {
   ///Initializes video based on configuration. Invoke actions which need to be
   ///run on player start.
   Future _initializeVideo() async {
+    if (_disposed) {
+      return;
+    }
+
     setLooping(betterPlayerConfiguration.looping);
     _videoEventStreamSubscription?.cancel();
     _videoEventStreamSubscription = null;
@@ -620,10 +628,12 @@ class BetterPlayerController {
   ///Start video playback. Play will be triggered only if current lifecycle state
   ///is resumed.
   Future<void> play() async {
+    if (_disposed) {
+      return;
+    }   
     if (videoPlayerController == null) {
       throw StateError("The data source has not been initialized");
     }
-
     if (_appLifecycleState == AppLifecycleState.resumed) {
       await videoPlayerController!.play();
       _hasCurrentDataSourceStarted = true;
@@ -1340,13 +1350,18 @@ class BetterPlayerController {
   ///autoDispose parameter will be overridden and controller will be disposed
   ///(if it wasn't disposed before).
   Future<void> dispose({bool forceDispose = false}) async {
-    if (!betterPlayerConfiguration.autoDispose && !forceDispose) {
-      return;
-    }
+  if (!betterPlayerConfiguration.autoDispose && !forceDispose) {
+    return;
+  }
 
-    if (!_disposed) {
-      _disposed = true;
+  if (!_disposed) {
+    _disposed = true;
 
+    int retryCount = 0;
+    const maxRetries = 3;
+    const retryDelay = Duration(seconds: 1);
+
+    while (retryCount < maxRetries) {
       try {
         if (videoPlayerController != null) {
           await videoPlayerController!.pause();
@@ -1354,9 +1369,6 @@ class BetterPlayerController {
 
           videoPlayerController!.removeListener(_onFullScreenStateChanged);
           videoPlayerController!.removeListener(_onVideoPlayerChanged);
-
-          await videoPlayerController!.dispose();
-          videoPlayerController = null;
         }
 
         _eventListeners.clear();
@@ -1374,18 +1386,33 @@ class BetterPlayerController {
           }
         }
         _tempFiles.clear();
-
+        if (videoPlayerController != null) {
+          await videoPlayerController!.dispose();
+          videoPlayerController = null;
+        }
+        break;
       } catch (error) {
-        BetterPlayerUtils.log("Error during dispose: $error");
+        retryCount++;
+        BetterPlayerUtils.log("Error during dispose (attempt $retryCount): $error");
+
+        if (retryCount < maxRetries) {
+          await Future.delayed(retryDelay);
+        } else {
+          BetterPlayerUtils.log("Failed to dispose after $maxRetries attempts");
+        }
       }
     }
   }
+}
+
 
   BetterPlayerSubtitlesConfiguration getSubtitlesConfiguration() {
-    return _subtitlesConfiguration ?? betterPlayerConfiguration.subtitlesConfiguration;
+    return _subtitlesConfiguration ??
+        betterPlayerConfiguration.subtitlesConfiguration;
   }
 
-  void setSubtitlesConfiguration(BetterPlayerSubtitlesConfiguration subtitlesConfiguration) {
+  void setSubtitlesConfiguration(
+      BetterPlayerSubtitlesConfiguration subtitlesConfiguration) {
     _subtitlesConfiguration = subtitlesConfiguration;
   }
 }
