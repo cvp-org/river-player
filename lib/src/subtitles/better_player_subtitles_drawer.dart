@@ -135,7 +135,6 @@ class _BetterPlayerSubtitlesDrawerState
       ),
     ]);
   }
-
   Widget _getTextWithStroke(String subtitleText) {
     final outerTextStyle = TextStyle(
         fontSize: _subtitlesConfiguration.fontSize,
@@ -161,8 +160,8 @@ class _BetterPlayerSubtitlesDrawerState
         color: _subtitlesConfiguration.backgroundColor,
         borderRadius: BorderRadius.circular(8),
       ),
-      alignment: _subtitlesConfiguration.alignment,
       child: Stack(
+        alignment: _subtitlesConfiguration.alignment,
         children: [
           if (_subtitlesConfiguration.outlineEnabled)
             _buildHtmlWidget(subtitleText, outerTextStyle)
