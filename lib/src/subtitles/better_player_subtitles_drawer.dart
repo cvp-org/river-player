@@ -94,7 +94,7 @@ class _BetterPlayerSubtitlesDrawerState
 
     return Container(
       height: double.infinity,
-      width: double.infinity,
+      width: MediaQuery.of(context).size.width * 0.8,
       child: Padding(
         padding: EdgeInsets.only(
             bottom: _playerVisible
