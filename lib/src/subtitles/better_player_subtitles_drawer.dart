@@ -161,6 +161,7 @@ class _BetterPlayerSubtitlesDrawerState
         color: _subtitlesConfiguration.backgroundColor,
         borderRadius: BorderRadius.circular(8),
       ),
+      alignment: _subtitlesConfiguration.alignment,
       child: Stack(
         children: [
           if (_subtitlesConfiguration.outlineEnabled)
