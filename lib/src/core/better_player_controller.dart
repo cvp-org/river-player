@@ -1358,14 +1358,13 @@ class BetterPlayerController {
     _disposed = true;
 
     int retryCount = 0;
-    const maxRetries = 3;
+    const maxRetries = 5;
     const retryDelay = Duration(seconds: 1);
 
     while (retryCount < maxRetries) {
       try {
         if (videoPlayerController != null) {
           await videoPlayerController!.pause();
-          await videoPlayerController!.seekTo(Duration.zero);
 
           videoPlayerController!.removeListener(_onFullScreenStateChanged);
           videoPlayerController!.removeListener(_onVideoPlayerChanged);
