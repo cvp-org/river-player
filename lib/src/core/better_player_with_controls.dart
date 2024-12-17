@@ -321,8 +321,9 @@ class _BetterPlayerVideoFitWidgetState
   @override
   void dispose() {
     if (_initializedListener != null) {
-      widget.betterPlayerController.videoPlayerController!
-          .removeListener(_initializedListener!);
+      if (controller != null) {
+        controller!.removeListener(_initializedListener!);
+      }
     }
     _controllerEventSubscription?.cancel();
     super.dispose();
