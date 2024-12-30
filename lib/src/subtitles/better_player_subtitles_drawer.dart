@@ -41,10 +41,13 @@ class _BetterPlayerSubtitlesDrawerState
   void initState() {
     _visibilityStreamSubscription =
         widget.playerVisibilityStream.listen((state) {
-      setState(() {
-        _playerVisible = state;
-      });
+      if (_playerVisible != state) {
+        setState(() {
+          _playerVisible = state;
+        });
+      }
     });
+    
     _subtitlesConfiguration = widget.betterPlayerSubtitlesConfiguration;
 
     widget.betterPlayerController.videoPlayerController!
@@ -86,11 +89,19 @@ class _BetterPlayerSubtitlesDrawerState
 
   @override
   Widget build(BuildContext context) {
-    final BetterPlayerSubtitle? subtitle = _getSubtitleAtCurrentPosition();
-    widget.betterPlayerController.renderedSubtitle = subtitle;
-    final List<String> subtitles = subtitle?.texts ?? [];
-    final List<Widget> textWidgets =
-        subtitles.map((text) => _buildSubtitleTextWidget(text)).toList();
+    final List<BetterPlayerSubtitle> currentSubtitles = _getSubtitlesAtCurrentPosition();
+    widget.betterPlayerController.renderedSubtitle = currentSubtitles.isNotEmpty ? currentSubtitles.first : null;
+    
+    final List<String> allSubtitles = currentSubtitles
+        .expand((subtitle) => subtitle.texts ?? [])
+        .cast<String>()
+        .toList();
+
+    final List<Widget> textWidgets = allSubtitles.asMap().entries.map((entry) {
+      int index = entry.key;
+      String text = entry.value;
+      return _buildSubtitleTextWidget(text, isLast: index == allSubtitles.length - 1);
+    }).toList();
 
     return Container(
       height: double.infinity,
@@ -98,7 +109,7 @@ class _BetterPlayerSubtitlesDrawerState
       child: Padding(
         padding: EdgeInsets.only(
             bottom: _playerVisible
-                ? _subtitlesConfiguration.bottomPadding + 30
+                ? _subtitlesConfiguration.bottomPadding + 88
                 : _subtitlesConfiguration.bottomPadding,
             left: _subtitlesConfiguration.leftPadding,
             right: _subtitlesConfiguration.rightPadding),
@@ -110,25 +121,29 @@ class _BetterPlayerSubtitlesDrawerState
     );
   }
 
-  BetterPlayerSubtitle? _getSubtitleAtCurrentPosition() {
+
+  List<BetterPlayerSubtitle> _getSubtitlesAtCurrentPosition() {
     if (_latestValue == null) {
-      return null;
+      return [];
     }
 
     final Duration position = _latestValue!.position;
-    for (final BetterPlayerSubtitle subtitle
-        in widget.betterPlayerController.subtitlesLines) {
+    final List<BetterPlayerSubtitle> currentSubtitles = [];
+    
+    for (final BetterPlayerSubtitle subtitle in widget.betterPlayerController.subtitlesLines) {
       if (subtitle.start! <= position && subtitle.end! >= position) {
-        return subtitle;
+        currentSubtitles.add(subtitle);
       }
     }
-    return null;
+    return currentSubtitles;
   }
 
-  Widget _buildSubtitleTextWidget(String subtitleText) {
+
+  Widget _buildSubtitleTextWidget(String subtitleText, {bool isLast = false}) {
     return Row(children: [
       Expanded(
-        child: Align(
+        child: Container(
+          margin: EdgeInsets.only(bottom: isLast ? 0 : 4),
           alignment: _subtitlesConfiguration.alignment,
           child: _getTextWithStroke(subtitleText),
         ),

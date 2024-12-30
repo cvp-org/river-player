@@ -630,7 +630,7 @@ class BetterPlayerController {
   Future<void> play() async {
     if (_disposed) {
       return;
-    }   
+    }
     if (videoPlayerController == null) {
       throw StateError("The data source has not been initialized");
     }
@@ -1350,60 +1350,61 @@ class BetterPlayerController {
   ///autoDispose parameter will be overridden and controller will be disposed
   ///(if it wasn't disposed before).
   Future<void> dispose({bool forceDispose = false}) async {
-  if (!betterPlayerConfiguration.autoDispose && !forceDispose) {
-    return;
-  }
+    if (!betterPlayerConfiguration.autoDispose && !forceDispose) {
+      return;
+    }
 
-  if (!_disposed) {
-    _disposed = true;
+    if (!_disposed) {
+      _disposed = true;
 
-    int retryCount = 0;
-    const maxRetries = 5;
-    const retryDelay = Duration(seconds: 1);
+      int retryCount = 0;
+      const maxRetries = 5;
+      const retryDelay = Duration(seconds: 1);
 
-    while (retryCount < maxRetries) {
-      try {
-        if (videoPlayerController != null) {
-          await videoPlayerController!.pause();
+      while (retryCount < maxRetries) {
+        try {
+          if (videoPlayerController != null) {
+            await videoPlayerController!.pause();
 
-          videoPlayerController!.removeListener(_onFullScreenStateChanged);
-          videoPlayerController!.removeListener(_onVideoPlayerChanged);
-        }
-
-        _eventListeners.clear();
-        _nextVideoTimer?.cancel();
-        await _nextVideoTimeStreamController.close();
-        await _controlsVisibilityStreamController.close();
-        await _videoEventStreamSubscription?.cancel();
-        await _controllerEventStreamController.close();
-
-        for (final file in _tempFiles) {
-          try {
-            await file.delete();
-          } catch (e) {
-            BetterPlayerUtils.log("Failed to delete temp file: $e");
+            videoPlayerController!.removeListener(_onFullScreenStateChanged);
+            videoPlayerController!.removeListener(_onVideoPlayerChanged);
           }
-        }
-        _tempFiles.clear();
-        if (videoPlayerController != null) {
-          await videoPlayerController!.dispose();
-          videoPlayerController = null;
-        }
-        break;
-      } catch (error) {
-        retryCount++;
-        BetterPlayerUtils.log("Error during dispose (attempt $retryCount): $error");
 
-        if (retryCount < maxRetries) {
-          await Future.delayed(retryDelay);
-        } else {
-          BetterPlayerUtils.log("Failed to dispose after $maxRetries attempts");
+          _eventListeners.clear();
+          _nextVideoTimer?.cancel();
+          await _nextVideoTimeStreamController.close();
+          await _controlsVisibilityStreamController.close();
+          await _videoEventStreamSubscription?.cancel();
+          await _controllerEventStreamController.close();
+
+          for (final file in _tempFiles) {
+            try {
+              await file.delete();
+            } catch (e) {
+              BetterPlayerUtils.log("Failed to delete temp file: $e");
+            }
+          }
+          _tempFiles.clear();
+          if (videoPlayerController != null) {
+            await videoPlayerController!.dispose();
+            videoPlayerController = null;
+          }
+          break;
+        } catch (error) {
+          retryCount++;
+          BetterPlayerUtils.log(
+              "Error during dispose (attempt $retryCount): $error");
+
+          if (retryCount < maxRetries) {
+            await Future.delayed(retryDelay);
+          } else {
+            BetterPlayerUtils.log(
+                "Failed to dispose after $maxRetries attempts");
+          }
         }
       }
     }
   }
-}
-
 
   BetterPlayerSubtitlesConfiguration getSubtitlesConfiguration() {
     return _subtitlesConfiguration ??
