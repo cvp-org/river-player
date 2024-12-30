@@ -142,7 +142,8 @@ class _BetterPlayerWithControlsState extends State<BetterPlayerWithControls> {
             betterPlayerSubtitlesConfiguration:
                 betterPlayerController.getSubtitlesConfiguration(),
             subtitles: betterPlayerController.subtitlesLines,
-            playerVisibilityStream: betterPlayerController.controlsVisibilityStream,
+            playerVisibilityStream:
+                betterPlayerController.controlsVisibilityStream,
           ),
           if (!placeholderOnTop) _buildPlaceholder(betterPlayerController),
           _buildControls(context, betterPlayerController),

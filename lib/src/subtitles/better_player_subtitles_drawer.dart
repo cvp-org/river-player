@@ -47,7 +47,7 @@ class _BetterPlayerSubtitlesDrawerState
         });
       }
     });
-    
+
     _subtitlesConfiguration = widget.betterPlayerSubtitlesConfiguration;
 
     widget.betterPlayerController.videoPlayerController!
@@ -89,9 +89,11 @@ class _BetterPlayerSubtitlesDrawerState
 
   @override
   Widget build(BuildContext context) {
-    final List<BetterPlayerSubtitle> currentSubtitles = _getSubtitlesAtCurrentPosition();
-    widget.betterPlayerController.renderedSubtitle = currentSubtitles.isNotEmpty ? currentSubtitles.first : null;
-    
+    final List<BetterPlayerSubtitle> currentSubtitles =
+        _getSubtitlesAtCurrentPosition();
+    widget.betterPlayerController.renderedSubtitle =
+        currentSubtitles.isNotEmpty ? currentSubtitles.first : null;
+
     final List<String> allSubtitles = currentSubtitles
         .expand((subtitle) => subtitle.texts ?? [])
         .cast<String>()
@@ -100,7 +102,8 @@ class _BetterPlayerSubtitlesDrawerState
     final List<Widget> textWidgets = allSubtitles.asMap().entries.map((entry) {
       int index = entry.key;
       String text = entry.value;
-      return _buildSubtitleTextWidget(text, isLast: index == allSubtitles.length - 1);
+      return _buildSubtitleTextWidget(text,
+          isLast: index == allSubtitles.length - 1);
     }).toList();
 
     return Container(
@@ -121,7 +124,6 @@ class _BetterPlayerSubtitlesDrawerState
     );
   }
 
-
   List<BetterPlayerSubtitle> _getSubtitlesAtCurrentPosition() {
     if (_latestValue == null) {
       return [];
@@ -129,15 +131,15 @@ class _BetterPlayerSubtitlesDrawerState
 
     final Duration position = _latestValue!.position;
     final List<BetterPlayerSubtitle> currentSubtitles = [];
-    
-    for (final BetterPlayerSubtitle subtitle in widget.betterPlayerController.subtitlesLines) {
+
+    for (final BetterPlayerSubtitle subtitle
+        in widget.betterPlayerController.subtitlesLines) {
       if (subtitle.start! <= position && subtitle.end! >= position) {
         currentSubtitles.add(subtitle);
       }
     }
     return currentSubtitles;
   }
-
 
   Widget _buildSubtitleTextWidget(String subtitleText, {bool isLast = false}) {
     return Row(children: [
@@ -150,6 +152,7 @@ class _BetterPlayerSubtitlesDrawerState
       ),
     ]);
   }
+
   Widget _getTextWithStroke(String subtitleText) {
     final outerTextStyle = TextStyle(
         fontSize: _subtitlesConfiguration.fontSize,

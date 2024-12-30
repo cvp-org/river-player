@@ -279,7 +279,7 @@ class BetterPlayerController {
 
     ///Process data source
     await _setupDataSource(betterPlayerDataSource);
-    setTrack(BetterPlayerAsmsTrack.defaultTrack());
+    setTrack(BetterPlayerAsmsTrack.defaultTrack(), isInitial: true);
   }
 
   ///Configure subtitles based on subtitles source.
@@ -915,7 +915,8 @@ class BetterPlayerController {
 
   ///Setup track parameters for currently played video. Can be only used for HLS or DASH
   ///data source.
-  void setTrack(BetterPlayerAsmsTrack track) {
+  Future<void> setTrack(BetterPlayerAsmsTrack track,
+      {bool isInitial = false}) async {
     if (videoPlayerController == null) {
       throw StateError("The data source has not been initialized");
     }
@@ -933,6 +934,13 @@ class BetterPlayerController {
     videoPlayerController!
         .setTrackParameters(track.width, track.height, track.bitrate);
     _betterPlayerAsmsTrack = track;
+
+    if (!isInitial) {
+      final position = await videoPlayerController!.position;
+      pause();
+      await _initializeVideo();
+      seekTo(position!);
+    }
   }
 
   ///Check if player can be played/paused automatically
