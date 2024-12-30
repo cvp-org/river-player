@@ -937,7 +937,6 @@ class BetterPlayerController {
 
     if (!isInitial) {
       final position = await videoPlayerController!.position;
-      pause();
       await _initializeVideo();
       seekTo(position!);
     }
