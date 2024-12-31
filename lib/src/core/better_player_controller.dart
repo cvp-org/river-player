@@ -934,12 +934,6 @@ class BetterPlayerController {
     videoPlayerController!
         .setTrackParameters(track.width, track.height, track.bitrate);
     _betterPlayerAsmsTrack = track;
-
-    if (!isInitial) {
-      final position = await videoPlayerController!.position;
-      await _initializeVideo();
-      seekTo(position!);
-    }
   }
 
   ///Check if player can be played/paused automatically
