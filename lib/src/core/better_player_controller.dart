@@ -1360,17 +1360,10 @@ class BetterPlayerController {
 
       int retryCount = 0;
       const maxRetries = 5;
-      const retryDelay = Duration(seconds: 1);
+      const retryDelay = Duration(seconds: 2);
 
       while (retryCount < maxRetries) {
         try {
-          if (videoPlayerController != null) {
-            await videoPlayerController!.pause();
-
-            videoPlayerController!.removeListener(_onFullScreenStateChanged);
-            videoPlayerController!.removeListener(_onVideoPlayerChanged);
-          }
-
           _eventListeners.clear();
           _nextVideoTimer?.cancel();
           await _nextVideoTimeStreamController.close();
@@ -1386,10 +1379,14 @@ class BetterPlayerController {
             }
           }
           _tempFiles.clear();
-          if (videoPlayerController != null) {
-            await videoPlayerController!.dispose();
-            videoPlayerController = null;
-          }
+
+          await videoPlayerController!.pause();
+
+          videoPlayerController!.removeListener(_onFullScreenStateChanged);
+          videoPlayerController!.removeListener(_onVideoPlayerChanged);
+
+          await videoPlayerController!.dispose();
+          videoPlayerController = null;
           break;
         } catch (error) {
           retryCount++;
