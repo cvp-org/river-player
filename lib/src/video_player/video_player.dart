@@ -207,9 +207,11 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
   /// Attempts to open the given [dataSource] and load metadata about the video.
   Future<void> _create() async {
+    debugPrint('Creating video player');
     _textureId = await _videoPlayerPlatform.create(
       bufferingConfiguration: bufferingConfiguration,
     );
+    debugPrint('Created video player $_textureId');
     _creatingCompleter.complete(null);
 
     unawaited(_applyLooping());
@@ -428,11 +430,14 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   @override
   Future<void> dispose() async {
     await _creatingCompleter.future;
+    debugPrint('Disposing video player $_isDisposed $_textureId');
     if (!_isDisposed) {
       _isDisposed = true;
       value = VideoPlayerValue.uninitialized();
       _timer?.cancel();
+      await _videoPlayerPlatform.pause(_textureId);
       await _eventSubscription?.cancel();
+      await _videoPlayerPlatform.setVolume(_textureId, 0);
       await _videoPlayerPlatform.dispose(_textureId);
       videoEventStreamController.close();
     }
@@ -567,7 +572,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
     await _videoPlayerPlatform.seekTo(_textureId, positionToSeek);
     _updatePosition(position);
-
+    if (_isDisposed) {
+      return;
+    }
     if (isPlaying) {
       play();
     } else {

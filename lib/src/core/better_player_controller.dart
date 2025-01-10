@@ -1360,7 +1360,7 @@ class BetterPlayerController {
 
       int retryCount = 0;
       const maxRetries = 5;
-      const retryDelay = Duration(seconds: 2);
+      const retryDelay = Duration(seconds: 1);
 
       while (retryCount < maxRetries) {
         try {
@@ -1389,6 +1389,7 @@ class BetterPlayerController {
           videoPlayerController = null;
           break;
         } catch (error) {
+          debugPrint("Error during dispose: $error");
           retryCount++;
           BetterPlayerUtils.log(
               "Error during dispose (attempt $retryCount): $error");
